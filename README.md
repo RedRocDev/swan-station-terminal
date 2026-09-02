@@ -4,6 +4,10 @@
 
 A full-screen, browser-based fan recreation inspired by the **DHARMA Initiative Swan Station terminal** from *LOST*.
 
+### System failure
+
+![Swan Station Terminal system failure warning](docs/preview2.png)
+
 The project recreates the feel of the station computer as an interactive web experience: the **108-minute countdown**, the sequence **4 · 8 · 15 · 16 · 23 · 42**, CRT phosphor styling, system-failure glyphs, layered sound design, mechanical recovery effects, and subtle randomized signal glitches.
 
 **Live demo:** https://dharma.redroc.dev/
