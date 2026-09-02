@@ -1,0 +1,2420 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#020503">
+<meta name="color-scheme" content="dark">
+<title>LOST Swan Station Terminal — DHARMA Countdown</title>
+
+<meta name="description" content="Interactive fan-made recreation of the DHARMA Initiative Swan Station terminal from LOST, with the 108-minute countdown, number sequence and system failure.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+<meta name="googlebot" content="index,follow">
+<meta name="bingbot" content="index,follow">
+<meta name="author" content="RedRoc">
+<meta name="application-name" content="Swan Station Terminal">
+
+<link rel="canonical" href="https://dharma.redroc.dev/">
+<link rel="sitemap" type="application/xml" href="/sitemap.xml">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%23020603'/%3E%3Ctext x='32' y='43' text-anchor='middle' font-family='monospace' font-size='32' font-weight='700' fill='%2363ff7d'%3E%26gt;%3A%3C/text%3E%3C/svg%3E">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="RedRoc">
+<meta property="og:locale" content="en_GB">
+<meta property="og:url" content="https://dharma.redroc.dev/">
+<meta property="og:title" content="LOST Swan Station Terminal — DHARMA Countdown">
+<meta property="og:description" content="Interactive fan-made recreation of the DHARMA Initiative Swan Station terminal from LOST, with the 108-minute countdown, number sequence and system failure.">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="LOST Swan Station Terminal — DHARMA Countdown">
+<meta name="twitter:description" content="Interactive fan-made recreation of the DHARMA Initiative Swan Station terminal from LOST, with the 108-minute countdown, number sequence and system failure.">
+
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"LOST Swan Station Terminal","alternateName":"DHARMA Initiative Swan Station Countdown","url":"https://dharma.redroc.dev/","description":"Interactive fan-made recreation of the DHARMA Initiative Swan Station terminal from LOST, with the 108-minute countdown, number sequence and system failure.","applicationCategory":"EntertainmentApplication","operatingSystem":"Any","browserRequirements":"Requires JavaScript and an audio-capable web browser.","isAccessibleForFree":true,"inLanguage":"en","creator":{"@type":"Organization","name":"RedRoc"}}</script>
+
+<style>
+  :root{
+    --green:#63ff7d;
+    --green-glow:rgba(87,255,117,.45);
+    --screen:#020603;
+    --screen-hi:#071109;
+    --danger:#ff3b30;
+    --alarm-red:#ff2b24;
+    --pad-x:5.8vw;
+    --pad-top:7.6vh;
+    --pad-bottom:7.2vh;
+  }
+
+  *{box-sizing:border-box}
+  html,body{width:100%;height:100%;margin:0}
+
+  .sr-only{
+    position:absolute!important;
+    width:1px!important;
+    height:1px!important;
+    padding:0!important;
+    margin:-1px!important;
+    overflow:hidden!important;
+    clip:rect(0,0,0,0)!important;
+    white-space:nowrap!important;
+    border:0!important;
+  }
+
+
+  body{
+    overflow:hidden;
+    background:#000;
+    font-family:"Courier New",Courier,monospace;
+  }
+
+  .terminal{
+    position:relative;
+    width:100vw;
+    height:100vh;
+    overflow:hidden;
+    border:0;
+    outline:0;
+    color:var(--green);
+    background:
+      radial-gradient(ellipse at center,rgba(35,110,48,.10) 0%,transparent 52%),
+      linear-gradient(180deg,var(--screen-hi),var(--screen) 45%,#010302 100%);
+    box-shadow:inset 0 0 110px #000;
+    cursor:text;
+    isolation:isolate;
+  }
+
+  .terminal:focus,
+  .terminal:focus-visible{
+    outline:none;
+    border:0;
+  }
+
+  .terminal::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:20;
+    pointer-events:none;
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,.018) 0,
+        rgba(255,255,255,.018) 1px,
+        rgba(0,0,0,.14) 2px,
+        rgba(0,0,0,.14) 4px
+      );
+    mix-blend-mode:screen;
+    opacity:.85;
+  }
+
+  .terminal::after{
+    content:"";
+    position:absolute;
+    inset:-8%;
+    z-index:21;
+    pointer-events:none;
+    background:
+      radial-gradient(ellipse at center,transparent 0 58%,rgba(0,0,0,.42) 82%,rgba(0,0,0,.82) 100%),
+      linear-gradient(108deg,transparent 18%,rgba(255,255,255,.025) 40%,transparent 63%);
+  }
+
+
+  /*
+    Very subtle random CRT glitches. These never alter terminal state or input;
+    they only perturb the rendered picture for a few milliseconds.
+  */
+  .glitch-band{
+    position:absolute;
+    left:-2%;
+    width:104%;
+    top:var(--glitch-band-top,50%);
+    height:var(--glitch-band-height,4px);
+    z-index:19;
+    pointer-events:none;
+    opacity:0;
+    transform:translateX(var(--glitch-band-x,0));
+    background:
+      linear-gradient(
+        90deg,
+        transparent 0 4%,
+        rgba(99,255,125,.055) 12%,
+        rgba(255,255,255,.025) 48%,
+        rgba(99,255,125,.045) 82%,
+        transparent 96%
+      );
+    box-shadow:
+      0 0 6px rgba(99,255,125,.035),
+      0 1px 0 rgba(255,255,255,.018);
+    mix-blend-mode:screen;
+  }
+
+  .glitch-band.active{
+    opacity:var(--glitch-band-opacity,.34);
+  }
+
+  .terminal.glitch-shift .content,
+  .terminal.glitch-shift .footer{
+    transform:translate(
+      var(--glitch-x,1px),
+      var(--glitch-y,0)
+    );
+  }
+
+  .terminal.glitch-flicker .content,
+  .terminal.glitch-flicker .footer{
+    filter:brightness(1.12) contrast(1.05);
+    opacity:.97;
+  }
+
+  .terminal.glitch-dim .phosphor{
+    opacity:.88;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .noise,
+    .phosphor{
+      animation:none!important;
+    }
+    .glitch-band{display:none}
+    .terminal.glitch-shift .content,
+    .terminal.glitch-shift .footer{
+      transform:none;
+    }
+    .terminal.glitch-flicker .content,
+    .terminal.glitch-flicker .footer{
+      filter:none;
+      opacity:1;
+    }
+  }
+
+  .noise{
+    position:absolute;
+    inset:0;
+    z-index:4;
+    pointer-events:none;
+    opacity:.07;
+    background-image:
+      radial-gradient(circle at 20% 30%,#fff 0 1px,transparent 1px),
+      radial-gradient(circle at 78% 62%,#fff 0 1px,transparent 1px),
+      radial-gradient(circle at 45% 88%,#fff 0 1px,transparent 1px);
+    background-size:97px 83px,121px 107px,77px 91px;
+    animation:noiseShift .22s steps(2,end) infinite;
+  }
+
+  @keyframes noiseShift{
+    0%{transform:translate(0,0)}
+    50%{transform:translate(2px,-1px)}
+    100%{transform:translate(-1px,1px)}
+  }
+
+  .phosphor{
+    position:absolute;
+    inset:0;
+    z-index:2;
+    box-shadow:
+      inset 0 0 120px rgba(0,255,65,.03),
+      inset 0 0 15px rgba(0,255,65,.045);
+    animation:flicker 5s infinite;
+  }
+
+  @keyframes flicker{
+    0%,17%,19%,37%,39%,100%{opacity:1}
+    18%{opacity:.965}
+    38%{opacity:.985}
+    72%{opacity:.992}
+  }
+
+  .content{
+    position:absolute;
+    inset:0;
+    z-index:10;
+    padding:
+      max(var(--pad-top),env(safe-area-inset-top))
+      max(var(--pad-x),env(safe-area-inset-right))
+      max(150px,calc(env(safe-area-inset-bottom) + 120px))
+      max(var(--pad-x),env(safe-area-inset-left));
+    display:flex;
+    flex-direction:column;
+  }
+
+  .header{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:30px;
+    color:rgba(99,255,125,.50);
+    font-size:clamp(17px,1.15vw,23px);
+    line-height:1.35;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    user-select:none;
+  }
+
+  .header-left{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .header-right{
+    text-align:right;
+  }
+
+  .divider{
+    height:1px;
+    margin-top:28px;
+    background:linear-gradient(
+      90deg,
+      rgba(99,255,125,.22),
+      rgba(99,255,125,.05) 72%,
+      transparent
+    );
+  }
+
+  /*
+    Deliberately NOT centred.
+    The LOST-style input now sits immediately below the header/divider,
+    matching the visual position of the previous page at ~225% browser zoom.
+  */
+  .console{
+    flex:1;
+    display:flex;
+    align-items:flex-start;
+    justify-content:flex-start;
+    padding-top:38px;
+  }
+
+  .prompt-area{
+    width:100%;
+    min-height:240px;
+    transition:opacity .16s ease,visibility .16s ease;
+  }
+
+  .promptline{
+    display:flex;
+    align-items:baseline;
+    flex-wrap:wrap;
+    min-height:112px;
+    color:var(--green);
+    font-size:clamp(72px,5.4vw,116px);
+    line-height:1.05;
+    font-weight:700;
+    letter-spacing:.025em;
+    text-shadow:
+      0 0 2px var(--green),
+      0 0 10px var(--green-glow),
+      0 0 22px rgba(71,255,101,.20);
+  }
+
+  .prompt{
+    margin-right:.28em;
+    white-space:nowrap;
+  }
+
+  #typed{
+    white-space:pre-wrap;
+    word-break:break-word;
+  }
+
+  .cursor{
+    display:inline-block;
+    width:.48em;
+    height:.78em;
+    margin-left:.13em;
+    vertical-align:-.06em;
+    background:var(--green);
+    box-shadow:
+      0 0 4px var(--green),
+      0 0 16px var(--green-glow);
+    opacity:1;
+  }
+
+  .cursor.tick-blink{
+    opacity:0;
+  }
+
+  .message{
+    min-height:70px;
+    margin-top:26px;
+    color:var(--green);
+    font-size:clamp(24px,2vw,40px);
+    font-weight:700;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    text-shadow:0 0 10px var(--green-glow);
+  }
+
+  .message.error{
+    color:#85ff92;
+  }
+
+  .footer{
+    position:absolute;
+    left:max(var(--pad-x),env(safe-area-inset-left));
+    right:max(var(--pad-x),env(safe-area-inset-right));
+    bottom:max(var(--pad-bottom),env(safe-area-inset-bottom));
+    z-index:12;
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:32px;
+    pointer-events:none;
+  }
+
+  .numbers{
+    pointer-events:auto;
+    display:flex;
+    transition:color .18s ease,text-shadow .18s ease,opacity .18s ease;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:12px;
+    padding:8px 0;
+    color:rgba(99,255,125,.72);
+    font-size:clamp(20px,1.55vw,31px);
+    letter-spacing:.10em;
+    text-transform:uppercase;
+    user-select:none;
+  }
+
+  .numbers-label{
+    margin-right:12px;
+    color:rgba(99,255,125,.36);
+    font-size:.68em;
+    letter-spacing:.17em;
+  }
+
+  .number-chip{
+    border:0;
+    padding:0 2px;
+    color:var(--green);
+    background:transparent;
+    font:700 inherit/1 "Courier New",Courier,monospace;
+    text-shadow:0 0 8px rgba(99,255,125,.38);
+    cursor:pointer;
+    opacity:.92;
+    transition:opacity .16s ease,text-shadow .16s ease,transform .16s ease;
+  }
+
+  .number-chip:hover,
+  .number-chip:focus-visible{
+    opacity:1;
+    text-shadow:
+      0 0 3px var(--green),
+      0 0 14px rgba(99,255,125,.65);
+    transform:translateY(-1px);
+    outline:none;
+  }
+
+  .sep{
+    color:rgba(99,255,125,.34);
+  }
+
+  .countdown{
+    min-width:300px;
+    text-align:right;
+    user-select:none;
+  }
+
+  .countdown-label{
+    margin-bottom:10px;
+    color:rgba(99,255,125,.36);
+    font-size:clamp(14px,.95vw,19px);
+    letter-spacing:.18em;
+    text-transform:uppercase;
+  }
+
+  #countdown{
+    color:var(--green);
+    font-size:clamp(54px,4.25vw,88px);
+    line-height:.86;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-shadow:
+      0 0 3px var(--green),
+      0 0 13px rgba(99,255,125,.32);
+  }
+
+  .countdown.warning #countdown{
+    animation:warnPulse .72s steps(1,end) infinite;
+  }
+
+  .countdown.danger #countdown,
+  .countdown.danger .countdown-label{
+    color:var(--danger);
+    text-shadow:
+      0 0 4px rgba(255,59,48,.85),
+      0 0 18px rgba(255,59,48,.48);
+  }
+
+  .glyph-display{
+    display:none;
+    align-items:center;
+    justify-content:flex-end;
+    gap:5px;
+    height:78px;
+  }
+
+  .glyph-tile{
+    position:relative;
+    width:58px;
+    height:72px;
+    display:grid;
+    place-items:center;
+    overflow:hidden;
+    border:2px solid rgba(130,130,120,.42);
+    background:#080908;
+    color:#ff443b;
+    font:400 48px/1 "Segoe UI Historic","Noto Sans Egyptian Hieroglyphs","Segoe UI Symbol",serif;
+    text-shadow:0 0 9px rgba(255,50,40,.55);
+    box-shadow:
+      inset 0 0 14px rgba(0,0,0,.92),
+      0 0 15px rgba(255,40,34,.12);
+  }
+
+  .glyph-tile::after{
+    content:"";
+    position:absolute;
+    left:0;
+    right:0;
+    top:50%;
+    height:2px;
+    background:rgba(0,0,0,.65);
+    box-shadow:0 -1px rgba(255,255,255,.08);
+  }
+
+  .glyph-tile.hot{
+    background:#c6342d;
+    color:#080808;
+    text-shadow:none;
+    border-color:#76201c;
+  }
+
+  .countdown.failure{
+    min-width:330px;
+  }
+
+  .countdown.failure .countdown-label{
+    color:var(--danger);
+    text-shadow:0 0 8px rgba(255,59,48,.45);
+  }
+
+  .countdown.failure #countdown{
+    display:none;
+  }
+
+  .countdown.failure .glyph-display{
+    display:flex;
+  }
+
+  .alarm-overlay{
+    position:absolute;
+    inset:0;
+    z-index:30;
+    pointer-events:none;
+    opacity:0;
+    background:
+      radial-gradient(ellipse at center,transparent 0 42%,rgba(255,28,20,.08) 72%,rgba(255,20,15,.18) 100%),
+      linear-gradient(180deg,rgba(255,28,20,.025),transparent 35%,rgba(255,28,20,.035));
+  }
+
+  .terminal.alarm .alarm-overlay{
+    opacity:1;
+    animation:alarmFlash .82s steps(1,end) infinite;
+  }
+
+  .terminal.locked .alarm-overlay{
+    pointer-events:all;
+    cursor:not-allowed;
+  }
+
+  .terminal.locked .number-chip{
+    pointer-events:none;
+  }
+
+  .terminal.recovering{
+    cursor:wait;
+  }
+
+  .terminal.recovering .number-chip{
+    pointer-events:none;
+    opacity:.45;
+  }
+
+  .terminal.recovering .prompt-area{
+    opacity:.42;
+    pointer-events:none;
+  }
+
+  .terminal.recovering .cursor{
+    display:none;
+  }
+
+
+  /* Alarm mode: hide the input prompt, keep the bottom sequence visible,
+     and switch the whole interface from green to red. */
+  .terminal.locked .prompt-area{
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+  }
+
+  .terminal.alarm{
+    color:var(--alarm-red);
+  }
+
+  .terminal.alarm .header,
+  .terminal.alarm .numbers,
+  .terminal.alarm .number-chip,
+  .terminal.alarm .numbers-label,
+  .terminal.alarm .sep,
+  .terminal.alarm .countdown-label,
+  .terminal.alarm .help,
+  .terminal.alarm .message{
+    color:var(--alarm-red);
+  }
+
+  .terminal.alarm .number-chip,
+  .terminal.alarm .message{
+    text-shadow:
+      0 0 3px var(--alarm-red),
+      0 0 14px rgba(255,43,36,.58);
+  }
+
+  .terminal.alarm .divider{
+    background:linear-gradient(
+      90deg,
+      rgba(255,43,36,.58),
+      rgba(255,43,36,.10) 72%,
+      transparent
+    );
+  }
+
+  .terminal.alarm .numbers-label,
+  .terminal.alarm .sep,
+  .terminal.alarm .help,
+  .terminal.alarm .header,
+  .terminal.alarm .countdown-label{
+    opacity:.72;
+  }
+
+  .terminal.alarm .phosphor{
+    box-shadow:
+      inset 0 0 120px rgba(255,32,24,.035),
+      inset 0 0 18px rgba(255,32,24,.055);
+  }
+
+  .terminal.alarm .terminal::before{
+    mix-blend-mode:screen;
+  }
+
+
+  .terminal.alarm .divider{
+    background:linear-gradient(90deg,rgba(255,59,48,.48),rgba(255,59,48,.08) 72%,transparent);
+  }
+
+  .terminal.alarm .header{
+    color:rgba(255,87,76,.64);
+  }
+
+  @keyframes warnPulse{50%{opacity:.45}}
+  @keyframes alarmFlash{
+    0%,48%,100%{opacity:.18}
+    49%,74%{opacity:.58}
+    75%,99%{opacity:.30}
+  }
+
+  /* Animated warning glyph sequence:
+     rightmost tile appears first, each glyph shows as an outline,
+     then fills in and remains visible while alarm mode is active. */
+  .glyph-tile{
+    opacity:0;
+    transform:translateX(10px) scale(.98);
+    --tile-delay:0s;
+  }
+
+  .glyph-tile:nth-child(1){ --tile-delay:4s; }
+  .glyph-tile:nth-child(2){ --tile-delay:3s; }
+  .glyph-tile:nth-child(3){ --tile-delay:2s; }
+  .glyph-tile:nth-child(4){ --tile-delay:1s; }
+  .glyph-tile:nth-child(5){ --tile-delay:0s; }
+
+  .glyph-outline,
+  .glyph-fill{
+    position:absolute;
+    inset:0;
+    display:grid;
+    place-items:center;
+    line-height:1;
+  }
+
+  .glyph-outline{
+    color:transparent;
+    -webkit-text-stroke:1.3px rgba(255,108,98,.96);
+    text-shadow:0 0 10px rgba(255,52,42,.24);
+    opacity:0;
+  }
+
+  .glyph-fill{
+    color:#ff4e45;
+    text-shadow:0 0 10px rgba(255,54,44,.58);
+    opacity:0;
+  }
+
+  .glyph-tile.hot{
+    background:#8d2c27;
+    border-color:#76201c;
+  }
+
+  .glyph-tile.hot .glyph-fill{
+    color:#100302;
+    text-shadow:none;
+  }
+
+  .glyph-tile.hot .glyph-outline{
+    -webkit-text-stroke-color:#ffb0aa;
+    text-shadow:none;
+  }
+
+  .countdown.failure .glyph-tile{
+    animation:glyphTileOn .14s steps(1,end) forwards;
+    animation-delay:var(--tile-delay);
+  }
+
+  .countdown.failure .glyph-tile .glyph-outline{
+    animation:glyphOutlineOn .12s steps(1,end) forwards;
+    animation-delay:calc(var(--tile-delay) + .03s);
+  }
+
+  .countdown.failure .glyph-tile .glyph-fill{
+    animation:glyphFillOn .16s steps(1,end) forwards;
+    animation-delay:calc(var(--tile-delay) + .24s);
+  }
+
+  @keyframes glyphTileOn{
+    from{opacity:0;transform:translateX(10px) scale(.98)}
+    to{opacity:1;transform:translateX(0) scale(1)}
+  }
+
+  @keyframes glyphOutlineOn{
+    from{opacity:0}
+    to{opacity:1}
+  }
+
+  @keyframes glyphFillOn{
+    from{opacity:0}
+    to{opacity:1}
+  }
+
+  /* Once the fifth/leftmost glyph is complete, lock the entire five-card
+     display into its finished state until the recovery counter actually begins. */
+  .countdown.failure.glyphs-complete .glyph-tile{
+    opacity:1 !important;
+    transform:translateX(0) scale(1) !important;
+  }
+
+  .countdown.failure.glyphs-complete .glyph-outline,
+  .countdown.failure.glyphs-complete .glyph-fill{
+    opacity:1 !important;
+  }
+
+  .help{
+    position:absolute;
+    right:max(4.4vw,env(safe-area-inset-right));
+    top:50%;
+    transform:translateY(-50%);
+    z-index:11;
+    writing-mode:vertical-rl;
+    color:rgba(99,255,125,.18);
+    font-size:clamp(11px,.75vw,15px);
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    user-select:none;
+  }
+
+  @media(max-width:900px){
+    :root{
+      --pad-x:5vw;
+      --pad-top:5vh;
+      --pad-bottom:5vh;
+    }
+
+    .header{
+      font-size:clamp(12px,2vw,17px);
+    }
+
+    .console{
+      padding-top:28px;
+    }
+
+    .promptline{
+      font-size:clamp(52px,9vw,78px);
+    }
+
+    .numbers{
+      font-size:clamp(15px,2.3vw,21px);
+      gap:8px;
+    }
+
+    #countdown{
+      font-size:clamp(44px,7vw,64px);
+    }
+
+    .countdown{
+      min-width:220px;
+    }
+  }
+
+  @media(max-width:700px){
+    .content{
+      padding:
+        26px
+        20px
+        150px
+        20px;
+    }
+
+    .header{
+      font-size:10px;
+    }
+
+    .header-right{
+      display:none;
+    }
+
+    .divider{
+      margin-top:18px;
+    }
+
+    .console{
+      padding-top:24px;
+    }
+
+    .promptline{
+      font-size:clamp(42px,12vw,62px);
+      min-height:74px;
+    }
+
+    .footer{
+      left:20px;
+      right:20px;
+      bottom:20px;
+      align-items:flex-start;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .numbers{
+      font-size:clamp(14px,4vw,19px);
+    }
+
+    .countdown{
+      align-self:flex-end;
+      min-width:0;
+    }
+
+    .countdown-label{
+      font-size:10px;
+      margin-bottom:5px;
+    }
+
+    #countdown{
+      font-size:clamp(42px,13vw,64px);
+    }
+
+    .glyph-display{
+      height:58px;
+      gap:3px;
+    }
+
+    .glyph-tile{
+      width:42px;
+      height:54px;
+      font-size:35px;
+    }
+
+    .glyph-outline,
+    .glyph-fill{
+      font-size:35px;
+    }
+
+    .countdown.failure{
+      min-width:0;
+    }
+
+    .help{
+      display:none;
+    }
+  }
+
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{
+      animation-duration:.001ms!important;
+      animation-iteration-count:1!important;
+    }
+  }
+</style>
+</head>
+
+<body>
+<section class="sr-only" aria-label="About this interactive experience">
+  <h1>LOST Swan Station Terminal — DHARMA Initiative Countdown</h1>
+  <p>
+    An unofficial fan-made interactive recreation of the Swan Station computer terminal
+    inspired by LOST. Enter the sequence 4, 8, 15, 16, 23, 42 and interact with the
+    108-minute DHARMA countdown, warning sequence and system-failure display.
+  </p>
+</section>
+<main class="terminal" id="terminal" tabindex="0" aria-label="Interactive DHARMA Initiative Swan Station terminal">
+  <div class="phosphor" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="glitch-band" id="glitchBand" aria-hidden="true"></div>
+  <div class="alarm-overlay" aria-hidden="true"></div>
+
+  <section class="content">
+    <header class="header" aria-hidden="true">
+      <div class="header-left">
+        <span>DHARMA INITIATIVE</span>
+        <span>STATION 3 / SWAN</span>
+      </div>
+      <div class="header-right">
+        SYSTEM INPUT TERMINAL<br>
+        PROTOCOL ACTIVE
+      </div>
+    </header>
+
+    <div class="divider" aria-hidden="true"></div>
+
+    <section class="console">
+      <div class="prompt-area">
+        <div class="promptline">
+          <span class="prompt">&gt;:</span>
+          <span id="typed"></span>
+          <span class="cursor" aria-hidden="true"></span>
+        </div>
+        <div class="message" id="message" role="status" aria-live="polite"></div>
+      </div>
+    </section>
+  </section>
+
+  <aside class="footer">
+    <div class="numbers" aria-label="Required number sequence">
+      <span class="numbers-label">sequence</span>
+      <button class="number-chip" data-value="4">4</button><span class="sep">·</span>
+      <button class="number-chip" data-value="8">8</button><span class="sep">·</span>
+      <button class="number-chip" data-value="15">15</button><span class="sep">·</span>
+      <button class="number-chip" data-value="16">16</button><span class="sep">·</span>
+      <button class="number-chip" data-value="23">23</button><span class="sep">·</span>
+      <button class="number-chip" data-value="42">42</button>
+    </div>
+
+    <div class="countdown" id="countdownWrap" aria-label="Countdown timer">
+      <div class="countdown-label" id="countdownLabel">system countdown</div>
+      <div id="countdown" aria-live="off">108:00</div>
+      <div class="glyph-display" id="glyphDisplay" aria-label="System failure hieroglyphs">
+        <span class="glyph-tile">
+          <span class="glyph-outline">𓋴</span>
+          <span class="glyph-fill">𓋴</span>
+        </span>
+        <span class="glyph-tile">
+          <span class="glyph-outline">𓏲</span>
+          <span class="glyph-fill">𓏲</span>
+        </span>
+        <span class="glyph-tile">
+          <span class="glyph-outline">𓍒</span>
+          <span class="glyph-fill">𓍒</span>
+        </span>
+        <span class="glyph-tile hot">
+          <span class="glyph-outline">𓄿</span>
+          <span class="glyph-fill">𓄿</span>
+        </span>
+        <span class="glyph-tile hot">
+          <span class="glyph-outline">𓏱</span>
+          <span class="glyph-fill">𓏱</span>
+        </span>
+      </div>
+    </div>
+  </aside>
+
+  <div class="help">ENTER = EXECUTE · BACKSPACE = DELETE · ESC = CLEAR</div>
+</main>
+
+
+<audio
+  id="backgroundAudio"
+  src="freesound_community-lost-stars-27849.mp3"
+  preload="auto"
+  aria-hidden="true">
+</audio>
+
+<audio
+  id="alarmAudio"
+  src="8footdino_on_scratch-alarm-301729.mp3"
+  preload="metadata"
+  aria-hidden="true">
+</audio>
+
+<audio
+  id="monsterAudio"
+  src="the-vampires-monster-horror-orchestra-warning-338415.mp3"
+  preload="metadata"
+  aria-hidden="true">
+</audio>
+
+<audio
+  id="keyPressAudio"
+  src="dragon-studio-single-key-press-393908.mp3"
+  preload="auto"
+  aria-hidden="true">
+</audio>
+
+<audio
+  id="recoveryAudio"
+  src="phoenix_connection_brazil-time-passing-sound-effect-fast-clock-108403.mp3"
+  preload="metadata"
+  aria-hidden="true">
+</audio>
+
+<audio
+  id="recoveryLayerAudio"
+  src="freesound_community-helicopter-beat-47617.mp3"
+  preload="metadata"
+  aria-hidden="true">
+</audio>
+
+<audio
+  id="maxTotalAudio"
+  src="freesound_community-piano-crash-sound-37898.mp3"
+  preload="metadata"
+  aria-hidden="true">
+</audio>
+
+<script>
+(() => {
+  const CORRECT = "4 8 15 16 23 42";
+  const FULL_TIME = 108 * 60;
+  const MIN_INITIAL_SECONDS = 2 * 60;
+  const ALARM_LOCK_MS = 7000;
+  const ROLLUP_DURATION_MS = 7000;
+  const ROLLUP_FRAME_MS = 50;
+
+  const terminal = document.getElementById("terminal");
+  const typed = document.getElementById("typed");
+  const cursor = document.querySelector(".cursor");
+  const message = document.getElementById("message");
+  const countdown = document.getElementById("countdown");
+  const countdownWrap = document.getElementById("countdownWrap");
+  const countdownLabel = document.getElementById("countdownLabel");
+  const glitchBand = document.getElementById("glitchBand");
+  const backgroundAudio = document.getElementById("backgroundAudio");
+  const alarmAudio = document.getElementById("alarmAudio");
+  const monsterAudio = document.getElementById("monsterAudio");
+  const keyPressAudio = document.getElementById("keyPressAudio");
+  const recoveryAudio = document.getElementById("recoveryAudio");
+  const recoveryLayerAudio = document.getElementById("recoveryLayerAudio");
+  const maxTotalAudio = document.getElementById("maxTotalAudio");
+
+  const MAX_TOTAL_AUDIO_VOLUME = 1.0;
+  const MAX_TOTAL_GAIN_MULTIPLIER = 2.5;
+
+  const GLITCH_MIN_DELAY_MS = 3250;
+  const GLITCH_MAX_DELAY_MS = 11000;
+  const GLITCH_MIN_DURATION_MS = 55;
+  const GLITCH_MAX_DURATION_MS = 150;
+
+  const RECOVERY_AUDIO_VOLUME = 0.70;
+  const RECOVERY_LAYER_VOLUME = 0.70;
+  const RECOVERY_LAYER_GAIN_MULTIPLIER = 2.0;
+  const RECOVERY_LOOP_CUT_EARLY_SECONDS = 0.18;
+  const RECOVERY_LOOP_CHECK_MS = 25;
+
+  const KEY_PRESS_VOLUME = 0.72;
+  const KEY_PRESS_POOL_SIZE = 10;
+
+  const BACKGROUND_LOOP_GAP_MS = 2000;
+  const BACKGROUND_VOLUME = 0.32;
+  const BACKGROUND_ALARM_VOLUME = 0.12;
+
+  const CRITICAL_ALARM_SECONDS = 60;
+  const ALARM_VOLUME = 0.48;
+
+  // The five glyphs reveal right-to-left at 1-second intervals.
+  // The leftmost/fifth glyph appears four seconds after alarm mode starts.
+  // The monster cue lands a quarter-second later for a more dramatic hit.
+  const MONSTER_SYMBOL_DELAY_MS = 4250;
+  const MONSTER_VOLUME = 1.0;
+
+  let backgroundLoopTimer = null;
+  let backgroundStarted = false;
+
+  let alarmAudioActive = false;
+  let alarmAudioPrimed = false;
+
+  let monsterAudioPrimed = false;
+  let monsterTriggerTimer = null;
+  let monsterCueArmed = false;
+
+  const keyPressPool = [];
+  let keyPressPoolIndex = 0;
+
+  let recoveryAudioPrimed = false;
+  let recoveryAudioLoopMonitor = null;
+
+  let recoveryLayerPrimed = false;
+  let recoveryLayerLoopMonitor = null;
+
+  let glitchScheduleTimer = null;
+  let glitchClearTimer = null;
+  let glitchEchoTimer = null;
+
+  let tokens = [];
+  let buffer = "";
+  let remaining = FULL_TIME;
+  let audioCtx = null;
+  let recoveryLayerSourceNode = null;
+  let recoveryLayerGainNode = null;
+  let maxTotalSourceNode = null;
+  let maxTotalGainNode = null;
+  let maxTotalCompressorNode = null;
+  let maxTotalAudioPrimed = false;
+  let lastWarningTone = null;
+  let inputLocked = false;
+  let recovering = false;
+  let alarmResetTimer = null;
+  let glyphCompleteTimer = null;
+  let recoveryDelayTimer = null;
+  let recoveryInterval = null;
+  let failureReason = null;
+
+  function primeRecoveryLayerAudio(){
+    if(!recoveryLayerAudio || recoveryLayerPrimed) return;
+
+    const previousMuted = recoveryLayerAudio.muted;
+    const previousVolume = recoveryLayerAudio.volume;
+
+    recoveryLayerAudio.muted = true;
+    recoveryLayerAudio.volume = 0;
+
+    const playAttempt = recoveryLayerAudio.play();
+
+    if(playAttempt && typeof playAttempt.then === "function"){
+      playAttempt.then(() => {
+        recoveryLayerAudio.pause();
+        recoveryLayerAudio.currentTime = 0;
+        recoveryLayerAudio.muted = previousMuted;
+        recoveryLayerAudio.volume = previousVolume;
+        recoveryLayerPrimed = true;
+      }).catch(() => {
+        recoveryLayerAudio.muted = previousMuted;
+        recoveryLayerAudio.volume = previousVolume;
+      });
+    }else{
+      recoveryLayerAudio.pause();
+      recoveryLayerAudio.currentTime = 0;
+      recoveryLayerAudio.muted = previousMuted;
+      recoveryLayerAudio.volume = previousVolume;
+      recoveryLayerPrimed = true;
+    }
+  }
+
+  function clearRecoveryLayerLoopMonitor(){
+    if(recoveryLayerLoopMonitor){
+      clearInterval(recoveryLayerLoopMonitor);
+      recoveryLayerLoopMonitor = null;
+    }
+  }
+
+  function restartRecoveryLayerLoop(){
+    if(!recoveryLayerAudio || !recovering) return;
+
+    try{
+      recoveryLayerAudio.currentTime = 0;
+    }catch(_error){}
+
+    if(recoveryLayerAudio.paused){
+      const playAttempt = recoveryLayerAudio.play();
+      if(playAttempt && typeof playAttempt.catch === "function"){
+        playAttempt.catch(() => {});
+      }
+    }
+  }
+
+  function startRecoveryLayerAudio(){
+    if(!recoveryLayerAudio) return;
+
+    clearRecoveryLayerLoopMonitor();
+
+    recoveryLayerAudio.loop = false;
+    recoveryLayerAudio.muted = false;
+    recoveryLayerAudio.volume = RECOVERY_LAYER_VOLUME;
+
+    try{
+      recoveryLayerAudio.currentTime = 0;
+    }catch(_error){}
+
+    const playAttempt = recoveryLayerAudio.play();
+    if(playAttempt && typeof playAttempt.catch === "function"){
+      playAttempt.catch(() => {});
+    }
+
+    recoveryLayerLoopMonitor = setInterval(() => {
+      if(!recovering || !recoveryLayerAudio) return;
+
+      const duration = recoveryLayerAudio.duration;
+
+      if(
+        Number.isFinite(duration) &&
+        duration > RECOVERY_LOOP_CUT_EARLY_SECONDS &&
+        recoveryLayerAudio.currentTime >= duration - RECOVERY_LOOP_CUT_EARLY_SECONDS
+      ){
+        restartRecoveryLayerLoop();
+      }
+    }, RECOVERY_LOOP_CHECK_MS);
+  }
+
+  function stopRecoveryLayerAudio(){
+    clearRecoveryLayerLoopMonitor();
+
+    if(!recoveryLayerAudio) return;
+
+    recoveryLayerAudio.pause();
+    recoveryLayerAudio.loop = false;
+
+    try{
+      recoveryLayerAudio.currentTime = 0;
+    }catch(_error){}
+  }
+
+  function primeRecoveryAudio(){
+    if(!recoveryAudio || recoveryAudioPrimed) return;
+
+    const previousMuted = recoveryAudio.muted;
+    const previousVolume = recoveryAudio.volume;
+
+    recoveryAudio.muted = true;
+    recoveryAudio.volume = 0;
+
+    const playAttempt = recoveryAudio.play();
+
+    if(playAttempt && typeof playAttempt.then === "function"){
+      playAttempt.then(() => {
+        recoveryAudio.pause();
+        recoveryAudio.currentTime = 0;
+        recoveryAudio.muted = previousMuted;
+        recoveryAudio.volume = previousVolume;
+        recoveryAudioPrimed = true;
+      }).catch(() => {
+        recoveryAudio.muted = previousMuted;
+        recoveryAudio.volume = previousVolume;
+      });
+    }else{
+      recoveryAudio.pause();
+      recoveryAudio.currentTime = 0;
+      recoveryAudio.muted = previousMuted;
+      recoveryAudio.volume = previousVolume;
+      recoveryAudioPrimed = true;
+    }
+  }
+
+  function clearRecoveryAudioLoopMonitor(){
+    if(recoveryAudioLoopMonitor){
+      clearInterval(recoveryAudioLoopMonitor);
+      recoveryAudioLoopMonitor = null;
+    }
+  }
+
+  function restartRecoveryAudioLoop(){
+    if(!recoveryAudio || !recovering) return;
+
+    try{
+      recoveryAudio.currentTime = 0;
+    }catch(_error){}
+
+    if(recoveryAudio.paused){
+      const playAttempt = recoveryAudio.play();
+      if(playAttempt && typeof playAttempt.catch === "function"){
+        playAttempt.catch(() => {});
+      }
+    }
+  }
+
+  function startRecoveryAudio(){
+    if(!recoveryAudio) return;
+
+    clearRecoveryAudioLoopMonitor();
+
+    // Manual loop instead of native `loop` so we can skip the small quiet tail.
+    recoveryAudio.loop = false;
+    recoveryAudio.muted = false;
+    recoveryAudio.volume = RECOVERY_AUDIO_VOLUME;
+
+    try{
+      recoveryAudio.currentTime = 0;
+    }catch(_error){}
+
+    const playAttempt = recoveryAudio.play();
+    if(playAttempt && typeof playAttempt.catch === "function"){
+      playAttempt.catch(() => {});
+    }
+
+    recoveryAudioLoopMonitor = setInterval(() => {
+      if(!recovering || !recoveryAudio) return;
+
+      const duration = recoveryAudio.duration;
+
+      if(
+        Number.isFinite(duration) &&
+        duration > RECOVERY_LOOP_CUT_EARLY_SECONDS &&
+        recoveryAudio.currentTime >= duration - RECOVERY_LOOP_CUT_EARLY_SECONDS
+      ){
+        restartRecoveryAudioLoop();
+      }
+    }, RECOVERY_LOOP_CHECK_MS);
+  }
+
+  function stopRecoveryAudio(){
+    clearRecoveryAudioLoopMonitor();
+
+    if(!recoveryAudio) return;
+
+    recoveryAudio.pause();
+    recoveryAudio.loop = false;
+
+    try{
+      recoveryAudio.currentTime = 0;
+    }catch(_error){}
+  }
+
+  function initializeKeyPressPool(){
+    if(!keyPressAudio || keyPressPool.length) return;
+
+    for(let i = 0; i < KEY_PRESS_POOL_SIZE; i += 1){
+      const sound = keyPressAudio.cloneNode(true);
+      sound.volume = KEY_PRESS_VOLUME;
+      sound.preload = "auto";
+      keyPressPool.push(sound);
+    }
+  }
+
+  function playKeyPressSound(){
+    if(!keyPressPool.length) initializeKeyPressPool();
+    if(!keyPressPool.length) return;
+
+    const sound = keyPressPool[keyPressPoolIndex];
+    keyPressPoolIndex = (keyPressPoolIndex + 1) % keyPressPool.length;
+
+    try{
+      sound.pause();
+      sound.currentTime = 0;
+      sound.volume = KEY_PRESS_VOLUME;
+    }catch(_error){}
+
+    const playAttempt = sound.play();
+    if(playAttempt && typeof playAttempt.catch === "function"){
+      playAttempt.catch(() => {});
+    }
+  }
+
+  function isTerminalKey(key){
+    return /^[0-9]$/.test(key) ||
+      key === " " ||
+      key === "Backspace" ||
+      key === "Enter" ||
+      key === "Escape";
+  }
+
+  function randomBetween(min, max){
+    return min + Math.random() * (max - min);
+  }
+
+  function clearVisualGlitch(){
+    if(glitchClearTimer){
+      clearTimeout(glitchClearTimer);
+      glitchClearTimer = null;
+    }
+
+    terminal.classList.remove(
+      "glitch-shift",
+      "glitch-flicker",
+      "glitch-dim"
+    );
+
+    terminal.style.removeProperty("--glitch-x");
+    terminal.style.removeProperty("--glitch-y");
+
+    if(glitchBand){
+      glitchBand.classList.remove("active");
+      glitchBand.style.removeProperty("--glitch-band-top");
+      glitchBand.style.removeProperty("--glitch-band-height");
+      glitchBand.style.removeProperty("--glitch-band-x");
+      glitchBand.style.removeProperty("--glitch-band-opacity");
+    }
+  }
+
+  function pulseVisualGlitch(){
+    clearVisualGlitch();
+
+    const duration = Math.round(
+      randomBetween(GLITCH_MIN_DURATION_MS, GLITCH_MAX_DURATION_MS)
+    );
+
+    const choice = Math.random();
+
+    if(choice < 0.48){
+      // A one- or two-pixel horizontal registration slip.
+      const direction = Math.random() < 0.5 ? -1 : 1;
+      const amount = Math.random() < 0.82 ? 2 : 4;
+
+      terminal.style.setProperty("--glitch-x", `${direction * amount}px`);
+      terminal.style.setProperty(
+        "--glitch-y",
+        Math.random() < 0.16 ? "1px" : "0px"
+      );
+      terminal.classList.add("glitch-shift");
+    }else if(choice < 0.82 && glitchBand){
+      // A thin horizontal CRT tear that appears in a random vertical position.
+      glitchBand.style.setProperty(
+        "--glitch-band-top",
+        `${randomBetween(8, 92).toFixed(2)}%`
+      );
+      glitchBand.style.setProperty(
+        "--glitch-band-height",
+        `${Math.round(randomBetween(3, 10))}px`
+      );
+      glitchBand.style.setProperty(
+        "--glitch-band-x",
+        `${Math.round(randomBetween(-8, 8))}px`
+      );
+      glitchBand.style.setProperty(
+        "--glitch-band-opacity",
+        randomBetween(.40, .68).toFixed(2)
+      );
+      glitchBand.classList.add("active");
+    }else if(choice < 0.94){
+      // Brief phosphor/contrast pulse.
+      terminal.classList.add("glitch-flicker");
+    }else{
+      // Rare, extremely small CRT brightness sag.
+      terminal.classList.add("glitch-dim");
+    }
+
+    glitchClearTimer = setTimeout(clearVisualGlitch, duration);
+  }
+
+  function runRandomVisualGlitch(){
+    if(document.hidden){
+      scheduleNextVisualGlitch();
+      return;
+    }
+
+    pulseVisualGlitch();
+
+    // Occasionally make it feel like a real unstable signal with one tiny
+    // after-pulse, but keep this uncommon so the effect never becomes noisy.
+    if(Math.random() < 0.40){
+      glitchEchoTimer = setTimeout(() => {
+        glitchEchoTimer = null;
+        pulseVisualGlitch();
+      }, Math.round(randomBetween(90, 210)));
+    }
+
+    scheduleNextVisualGlitch();
+  }
+
+  function scheduleNextVisualGlitch(){
+    if(glitchScheduleTimer){
+      clearTimeout(glitchScheduleTimer);
+    }
+
+    const delay = Math.round(
+      randomBetween(GLITCH_MIN_DELAY_MS, GLITCH_MAX_DELAY_MS)
+    );
+
+    glitchScheduleTimer = setTimeout(() => {
+      glitchScheduleTimer = null;
+      runRandomVisualGlitch();
+    }, delay);
+  }
+
+  function randomInitialSeconds(){
+    // Make the page feel as though the Swan timer was already running.
+    // Initial value may be anywhere from 002:00 through 108:00.
+    return Math.floor(
+      Math.random() * (FULL_TIME - MIN_INITIAL_SECONDS + 1)
+    ) + MIN_INITIAL_SECONDS;
+  }
+
+  function clearBackgroundLoopTimer(){
+    if(backgroundLoopTimer){
+      clearTimeout(backgroundLoopTimer);
+      backgroundLoopTimer = null;
+    }
+  }
+
+  async function startBackgroundAudio(){
+    if(!backgroundAudio) return false;
+
+    clearBackgroundLoopTimer();
+    backgroundAudio.loop = false;
+    backgroundAudio.volume = alarmAudioActive
+      ? BACKGROUND_ALARM_VOLUME
+      : BACKGROUND_VOLUME;
+
+    try{
+      await backgroundAudio.play();
+      backgroundStarted = true;
+      return true;
+    }catch(_error){
+      backgroundStarted = false;
+      return false;
+    }
+  }
+
+  function scheduleBackgroundReplay(){
+    if(!backgroundAudio) return;
+
+    clearBackgroundLoopTimer();
+
+    backgroundLoopTimer = setTimeout(async () => {
+      backgroundLoopTimer = null;
+
+      try{
+        backgroundAudio.currentTime = 0;
+        backgroundAudio.volume = alarmAudioActive
+          ? BACKGROUND_ALARM_VOLUME
+          : BACKGROUND_VOLUME;
+        await backgroundAudio.play();
+        backgroundStarted = true;
+      }catch(_error){
+        backgroundStarted = false;
+      }
+    }, BACKGROUND_LOOP_GAP_MS);
+  }
+
+  function retryBackgroundAudioAfterGesture(){
+    if(backgroundStarted) return;
+    startBackgroundAudio();
+  }
+
+  function primeAlarmAudio(){
+    if(!alarmAudio || alarmAudioPrimed) return;
+
+    const previousMuted = alarmAudio.muted;
+    alarmAudio.muted = true;
+
+    const playAttempt = alarmAudio.play();
+
+    if(playAttempt && typeof playAttempt.then === "function"){
+      playAttempt.then(() => {
+        alarmAudio.pause();
+        alarmAudio.currentTime = 0;
+        alarmAudio.muted = previousMuted;
+        alarmAudioPrimed = true;
+      }).catch(() => {
+        alarmAudio.muted = previousMuted;
+      });
+    }else{
+      alarmAudio.pause();
+      alarmAudio.currentTime = 0;
+      alarmAudio.muted = previousMuted;
+      alarmAudioPrimed = true;
+    }
+  }
+
+  function startAlarmAudio(){
+    if(!alarmAudio) return;
+
+    alarmAudioActive = true;
+
+    if(keyPressAudio){
+    keyPressAudio.volume = KEY_PRESS_VOLUME;
+    initializeKeyPressPool();
+  }
+
+  if(maxTotalAudio){
+    maxTotalAudio.loop = false;
+    maxTotalAudio.volume = MAX_TOTAL_AUDIO_VOLUME;
+
+    document.addEventListener("keydown", primeMaxTotalAudio, {
+      capture:true
+    });
+
+    document.addEventListener("pointerdown", primeMaxTotalAudio, {
+      capture:true
+    });
+
+    document.addEventListener("touchstart", primeMaxTotalAudio, {
+      capture:true,
+      passive:true
+    });
+  }
+
+  if(recoveryLayerAudio){
+    recoveryLayerAudio.loop = false;
+    recoveryLayerAudio.volume = RECOVERY_LAYER_VOLUME;
+
+    recoveryLayerAudio.addEventListener("ended", () => {
+      if(recovering){
+        restartRecoveryLayerLoop();
+      }
+    });
+
+    document.addEventListener("keydown", primeRecoveryLayerAudio, {
+      capture:true
+    });
+
+    document.addEventListener("pointerdown", primeRecoveryLayerAudio, {
+      capture:true
+    });
+
+    document.addEventListener("touchstart", primeRecoveryLayerAudio, {
+      capture:true,
+      passive:true
+    });
+  }
+
+  if(recoveryAudio){
+    recoveryAudio.loop = false;
+    recoveryAudio.volume = RECOVERY_AUDIO_VOLUME;
+
+    recoveryAudio.addEventListener("ended", () => {
+      if(recovering){
+        restartRecoveryAudioLoop();
+      }
+    });
+
+    document.addEventListener("keydown", primeRecoveryAudio, {
+      capture:true
+    });
+
+    document.addEventListener("pointerdown", primeRecoveryAudio, {
+      capture:true
+    });
+
+    document.addEventListener("touchstart", primeRecoveryAudio, {
+      capture:true,
+      passive:true
+    });
+  }
+
+  if(backgroundAudio){
+      backgroundAudio.volume = BACKGROUND_ALARM_VOLUME;
+    }
+    alarmAudio.loop = false;
+    alarmAudio.volume = ALARM_VOLUME;
+    alarmAudio.muted = false;
+
+    if(!alarmAudio.paused) return;
+
+    const playAttempt = alarmAudio.play();
+
+    if(playAttempt && typeof playAttempt.catch === "function"){
+      playAttempt.catch(() => {
+        // Audible autoplay can be blocked until the first user interaction.
+        // The next key/click/touch will retry it while alarmAudioActive is true.
+      });
+    }
+  }
+
+  function stopAlarmAudio(){
+    if(!alarmAudio) return;
+
+    alarmAudioActive = false;
+    alarmAudio.pause();
+
+    if(backgroundAudio){
+      backgroundAudio.volume = BACKGROUND_VOLUME;
+    }
+
+    try{
+      alarmAudio.currentTime = 0;
+    }catch(_error){}
+  }
+
+  function retryAlarmAudioAfterGesture(){
+    primeAlarmAudio();
+
+    if(alarmAudioActive){
+      startAlarmAudio();
+    }
+  }
+
+  function primeMonsterAudio(){
+    if(!monsterAudio || monsterAudioPrimed) return;
+
+    const previousMuted = monsterAudio.muted;
+    const previousVolume = monsterAudio.volume;
+
+    monsterAudio.muted = true;
+    monsterAudio.volume = 0;
+
+    const playAttempt = monsterAudio.play();
+
+    if(playAttempt && typeof playAttempt.then === "function"){
+      playAttempt.then(() => {
+        monsterAudio.pause();
+        monsterAudio.currentTime = 0;
+        monsterAudio.muted = previousMuted;
+        monsterAudio.volume = previousVolume;
+        monsterAudioPrimed = true;
+      }).catch(() => {
+        monsterAudio.muted = previousMuted;
+        monsterAudio.volume = previousVolume;
+      });
+    }else{
+      monsterAudio.pause();
+      monsterAudio.currentTime = 0;
+      monsterAudio.muted = previousMuted;
+      monsterAudio.volume = previousVolume;
+      monsterAudioPrimed = true;
+    }
+  }
+
+  function beginSilentMonsterCue(){
+    if(!monsterAudio) return;
+
+    // Start the media element immediately but silently. Four seconds later,
+    // when the fifth/leftmost glyph appears, rewind it to the beginning and
+    // make it audible. Because the same media element is already active, the
+    // subsequent timer roll-up cannot accidentally cancel the cue.
+    monsterCueArmed = true;
+    monsterAudio.loop = false;
+    monsterAudio.muted = false;
+    monsterAudio.volume = 0;
+
+    try{
+      monsterAudio.pause();
+      monsterAudio.currentTime = 0;
+    }catch(_error){}
+
+    const playAttempt = monsterAudio.play();
+
+    if(playAttempt && typeof playAttempt.catch === "function"){
+      playAttempt.catch(() => {
+        // Fallback play is attempted again when the fifth glyph arrives.
+      });
+    }
+  }
+
+  function playMonsterAudio(){
+    if(!monsterAudio) return;
+
+    monsterCueArmed = false;
+    monsterAudio.loop = false;
+    monsterAudio.muted = false;
+    monsterAudio.volume = MONSTER_VOLUME;
+
+    try{
+      // The audible cue must start from the beginning exactly when the
+      // fifth/leftmost symbol appears.
+      monsterAudio.currentTime = 0;
+    }catch(_error){}
+
+    const playAttempt = monsterAudio.play();
+
+    if(playAttempt && typeof playAttempt.catch === "function"){
+      playAttempt.catch(() => {
+        // Browser audio policy may still intervene if the visitor has never
+        // interacted with the page, but normal terminal use primes the audio.
+      });
+    }
+  }
+
+  function scheduleMonsterForFifthGlyph(){
+    if(monsterTriggerTimer){
+      clearTimeout(monsterTriggerTimer);
+      monsterTriggerTimer = null;
+    }
+
+    beginSilentMonsterCue();
+
+    monsterTriggerTimer = setTimeout(() => {
+      monsterTriggerTimer = null;
+
+      // Fifth/leftmost glyph appears four seconds after the rightmost one;
+      // the monster cue follows about 250ms later.
+      if(inputLocked && countdownWrap.classList.contains("failure")){
+        playMonsterAudio();
+      }
+    }, MONSTER_SYMBOL_DELAY_MS);
+  }
+
+  function retryMonsterAudioAfterGesture(){
+    primeMonsterAudio();
+
+    // If a failure sequence is already waiting for its fifth glyph, keep its
+    // silent media element active after the gesture unlocks browser audio.
+    if(monsterCueArmed && monsterAudio && monsterAudio.paused){
+      monsterAudio.volume = 0;
+      const playAttempt = monsterAudio.play();
+      if(playAttempt && typeof playAttempt.catch === "function"){
+        playAttempt.catch(() => {});
+      }
+    }
+  }
+
+  function primeMaxTotalAudio(){
+    if(!maxTotalAudio || maxTotalAudioPrimed) return;
+
+    const previousMuted = maxTotalAudio.muted;
+    const previousVolume = maxTotalAudio.volume;
+
+    maxTotalAudio.muted = true;
+    maxTotalAudio.volume = 0;
+
+    const playAttempt = maxTotalAudio.play();
+
+    if(playAttempt && typeof playAttempt.then === "function"){
+      playAttempt.then(() => {
+        maxTotalAudio.pause();
+        maxTotalAudio.currentTime = 0;
+        maxTotalAudio.muted = previousMuted;
+        maxTotalAudio.volume = previousVolume;
+        maxTotalAudioPrimed = true;
+      }).catch(() => {
+        maxTotalAudio.muted = previousMuted;
+        maxTotalAudio.volume = previousVolume;
+      });
+    }else{
+      maxTotalAudio.pause();
+      maxTotalAudio.currentTime = 0;
+      maxTotalAudio.muted = previousMuted;
+      maxTotalAudio.volume = previousVolume;
+      maxTotalAudioPrimed = true;
+    }
+  }
+
+  function ensureMaxTotalGain(){
+    if(!audioCtx || !maxTotalAudio || maxTotalGainNode) return;
+
+    try{
+      maxTotalSourceNode = audioCtx.createMediaElementSource(maxTotalAudio);
+      maxTotalGainNode = audioCtx.createGain();
+      maxTotalCompressorNode = audioCtx.createDynamicsCompressor();
+
+      maxTotalGainNode.gain.value = MAX_TOTAL_GAIN_MULTIPLIER;
+
+      // Keep the crash deliberately loud without letting the gain stage
+      // become excessively harsh if the source file is already hot.
+      maxTotalCompressorNode.threshold.value = -9;
+      maxTotalCompressorNode.knee.value = 10;
+      maxTotalCompressorNode.ratio.value = 8;
+      maxTotalCompressorNode.attack.value = 0.003;
+      maxTotalCompressorNode.release.value = 0.22;
+
+      maxTotalSourceNode
+        .connect(maxTotalGainNode)
+        .connect(maxTotalCompressorNode)
+        .connect(audioCtx.destination);
+    }catch(_error){
+      maxTotalAudio.volume = 1;
+    }
+  }
+
+  function playMaxTotalSound(){
+    if(!maxTotalAudio) return;
+
+    ensureAudio();
+    ensureMaxTotalGain();
+
+    maxTotalAudio.muted = false;
+    maxTotalAudio.volume = MAX_TOTAL_AUDIO_VOLUME;
+
+    try{
+      maxTotalAudio.pause();
+      maxTotalAudio.currentTime = 0;
+    }catch(_error){}
+
+    const playAttempt = maxTotalAudio.play();
+    if(playAttempt && typeof playAttempt.catch === "function"){
+      playAttempt.catch(() => {});
+    }
+  }
+
+  function ensureRecoveryLayerGain(){
+    if(!audioCtx || !recoveryLayerAudio || recoveryLayerGainNode) return;
+
+    try{
+      recoveryLayerSourceNode = audioCtx.createMediaElementSource(recoveryLayerAudio);
+      recoveryLayerGainNode = audioCtx.createGain();
+      recoveryLayerGainNode.gain.value = RECOVERY_LAYER_GAIN_MULTIPLIER;
+      recoveryLayerSourceNode
+        .connect(recoveryLayerGainNode)
+        .connect(audioCtx.destination);
+    }catch(_error){
+      // Fallback: if Web Audio routing is unavailable, at least use
+      // the media element's maximum native volume.
+      recoveryLayerAudio.volume = 1;
+    }
+  }
+
+  function ensureAudio(){
+    if(!audioCtx){
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if(Ctx) audioCtx = new Ctx();
+    }
+    if(audioCtx){
+      ensureRecoveryLayerGain();
+      ensureMaxTotalGain();
+      if(audioCtx.state === "suspended") audioCtx.resume();
+    }
+  }
+
+  function tone(freq = 760, duration = .045, volume = .025){
+    if(!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = "square";
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(.0001, audioCtx.currentTime + duration);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+  }
+
+  function currentText(){
+    const parts = tokens.slice();
+    if(buffer) parts.push(buffer);
+    return parts.join(" ");
+  }
+
+  function renderInput(){
+    typed.textContent = currentText();
+  }
+
+  function clearMessage(){
+    message.textContent = "";
+    message.className = "message";
+  }
+
+  function commitBuffer(){
+    if(!buffer) return;
+    tokens.push(buffer);
+    buffer = "";
+    if(tokens.length > 6) tokens = tokens.slice(-6);
+    renderInput();
+  }
+
+  function interactionBlocked(){
+    return inputLocked || recovering;
+  }
+
+  function inputDigit(d){
+    ensureAudio();
+    clearMessage();
+    if(tokens.length >= 6) return;
+    if(buffer.length >= 2) commitBuffer();
+    buffer += d;
+    if(buffer.length === 2) commitBuffer();
+    renderInput();
+    tone(920, .022, .014);
+  }
+
+  function inputWholeNumber(value){
+    ensureAudio();
+    clearMessage();
+    commitBuffer();
+    if(tokens.length < 6){
+      tokens.push(String(value));
+      renderInput();
+      tone(920, .025, .018);
+    }
+  }
+
+  function space(){
+    ensureAudio();
+    commitBuffer();
+  }
+
+  function backspace(){
+    clearMessage();
+    if(buffer){
+      buffer = buffer.slice(0, -1);
+    }else if(tokens.length){
+      buffer = tokens.pop();
+      buffer = buffer.slice(0, -1);
+    }
+    renderInput();
+  }
+
+  function clearInput(){
+    tokens = [];
+    buffer = "";
+    clearMessage();
+    renderInput();
+  }
+
+  function formatCountdown(value){
+    const safe = Math.max(0, Math.floor(value));
+    const mins = Math.floor(safe / 60);
+    const secs = safe % 60;
+    return `${String(mins).padStart(3, "0")}:${String(secs).padStart(2, "0")}`;
+  }
+
+  function clearGlyphCompleteState(){
+    if(glyphCompleteTimer){
+      clearTimeout(glyphCompleteTimer);
+      glyphCompleteTimer = null;
+    }
+    countdownWrap.classList.remove("glyphs-complete");
+  }
+
+  function clearRecoveryTimers(){
+    if(recoveryDelayTimer){
+      clearTimeout(recoveryDelayTimer);
+      recoveryDelayTimer = null;
+    }
+    if(recoveryInterval){
+      clearInterval(recoveryInterval);
+      recoveryInterval = null;
+    }
+  }
+
+  function setAlarmVisual(active, label = "warning") {
+    terminal.classList.toggle("alarm", active);
+    countdownWrap.classList.toggle("failure", active);
+    countdownLabel.textContent = active ? label : "system countdown";
+  }
+
+  function renderCountdown(){
+    const safe = Math.max(0, Math.floor(remaining));
+    countdown.textContent = formatCountdown(safe);
+
+    if(recovering){
+      countdownWrap.classList.remove("warning", "danger", "failure");
+      return;
+    }
+
+    if(safe <= 0){
+      countdownWrap.classList.remove("warning", "danger");
+      if(!inputLocked) triggerLockedAlarm("zero");
+      return;
+    }
+
+    if(!countdownWrap.classList.contains("failure")){
+      if(safe <= 240){
+        countdownWrap.classList.add("warning");
+      }else{
+        countdownWrap.classList.remove("warning");
+      }
+
+      if(safe <= 60){
+        countdownWrap.classList.add("danger");
+      }else{
+        countdownWrap.classList.remove("danger");
+      }
+    }
+  }
+
+  function startRollup(labelText = "RESTORING TIMER"){
+    clearRecoveryTimers();
+
+    // Keep the finished five-card warning intact until this exact transition
+    // into the 000:00 recovery counter.
+    clearGlyphCompleteState();
+
+    // Recovery sound begins at the exact moment the counter starts climbing
+    // from 000:00. It loops only for the duration of the roll-up.
+    startRecoveryAudio();
+    startRecoveryLayerAudio();
+
+    // The normal alarm stops when recovery begins, but the monster cue is a
+    // separate layer and is deliberately allowed to finish naturally.
+    stopAlarmAudio();
+
+    recovering = true;
+    inputLocked = false;
+    failureReason = null;
+    lastWarningTone = null;
+
+    terminal.classList.remove("alarm", "locked");
+    terminal.classList.add("recovering");
+    countdownWrap.classList.remove("warning", "danger", "failure");
+    countdownLabel.textContent = "system restore";
+
+    tokens = [];
+    buffer = "";
+    renderInput();
+
+    if(cursor) cursor.classList.remove("tick-blink");
+
+    message.textContent = labelText;
+    message.className = "message";
+
+    remaining = 0;
+    renderCountdown();
+
+    const startTime = performance.now();
+    let shown = -1;
+
+    recoveryInterval = setInterval(() => {
+      const elapsed = performance.now() - startTime;
+      const progress = Math.min(1, elapsed / ROLLUP_DURATION_MS);
+      const nextValue = Math.min(FULL_TIME, Math.floor(FULL_TIME * progress));
+
+      if(nextValue !== shown){
+        shown = nextValue;
+        remaining = nextValue;
+        renderCountdown();
+      }
+
+      if(progress >= 1){
+        clearInterval(recoveryInterval);
+        recoveryInterval = null;
+
+        remaining = FULL_TIME;
+        recovering = false;
+        stopRecoveryAudio();
+        stopRecoveryLayerAudio();
+        playMaxTotalSound();
+        terminal.classList.remove("recovering");
+        countdownLabel.textContent = "system countdown";
+        renderCountdown();
+
+        setTimeout(() => {
+          if(message.textContent === labelText) clearMessage();
+        }, 900);
+
+        terminal.focus();
+      }
+    }, ROLLUP_FRAME_MS);
+  }
+
+  function initializeLiveCountdown(){
+    clearRecoveryTimers();
+    clearGlyphCompleteState();
+    stopAlarmAudio();
+    stopRecoveryAudio();
+    stopRecoveryLayerAudio();
+
+    recovering = false;
+    inputLocked = false;
+    failureReason = null;
+    lastWarningTone = null;
+
+    terminal.classList.remove("alarm", "locked", "recovering");
+    countdownWrap.classList.remove("warning", "danger", "failure");
+    countdownLabel.textContent = "system countdown";
+
+    tokens = [];
+    buffer = "";
+    renderInput();
+    clearMessage();
+
+    if(cursor) cursor.classList.remove("tick-blink");
+
+    remaining = randomInitialSeconds();
+    renderCountdown();
+  }
+
+  function unlockAfterAlarm(){
+    if(alarmResetTimer){
+      clearTimeout(alarmResetTimer);
+      alarmResetTimer = null;
+    }
+
+    const reason = failureReason;
+    failureReason = null;
+
+    if(reason === "zero" || reason === "incorrect") {
+      startRollup("RESTORING TIMER");
+      return;
+    }
+
+    clearGlyphCompleteState();
+    terminal.classList.remove("locked");
+    setAlarmVisual(false);
+    clearInput();
+
+    inputLocked = false;
+    renderCountdown();
+    terminal.focus();
+  }
+
+  function triggerLockedAlarm(reason){
+    if(inputLocked) return;
+
+    clearRecoveryTimers();
+    clearGlyphCompleteState();
+    startAlarmAudio();
+    scheduleMonsterForFifthGlyph();
+
+    failureReason = reason;
+    recovering = false;
+    inputLocked = true;
+    terminal.classList.remove("recovering");
+    terminal.classList.add("locked");
+
+    if(cursor) cursor.classList.remove("tick-blink");
+
+    if(reason === "zero") {
+      message.textContent = "SYSTEM FAILURE";
+      countdownLabel.textContent = "system failure";
+    }else{
+      message.textContent = "INCORRECT";
+      countdownLabel.textContent = "warning";
+    }
+
+    message.className = "message error";
+    setAlarmVisual(true, reason === "zero" ? "system failure" : "warning");
+
+    // Leftmost/fifth tile starts at 4.0s; its fill completes at ~4.40s.
+    // From that point, explicitly pin all five cards and all five symbols on
+    // screen until startRollup() swaps the glyph display for 000:00.
+    glyphCompleteTimer = setTimeout(() => {
+      glyphCompleteTimer = null;
+      if(inputLocked && countdownWrap.classList.contains("failure")){
+        countdownWrap.classList.add("glyphs-complete");
+      }
+    }, 4425);
+
+    if(alarmResetTimer) clearTimeout(alarmResetTimer);
+    alarmResetTimer = setTimeout(unlockAfterAlarm, ALARM_LOCK_MS);
+  }
+
+  function execute(){
+    ensureAudio();
+    commitBuffer();
+    const entered = tokens.join(" ").trim();
+
+    if(entered === CORRECT){
+      stopAlarmAudio();
+      stopRecoveryAudio();
+      stopRecoveryLayerAudio();
+      message.textContent = "SYSTEM RESET";
+      message.className = "message";
+      tone(880, .06, .035);
+      setTimeout(() => tone(1180, .08, .033), 110);
+
+      remaining = FULL_TIME;
+      playMaxTotalSound();
+      lastWarningTone = null;
+      if(alarmResetTimer){
+        clearTimeout(alarmResetTimer);
+        alarmResetTimer = null;
+      }
+      clearRecoveryTimers();
+      clearGlyphCompleteState();
+      inputLocked = false;
+      recovering = false;
+      failureReason = null;
+
+      terminal.classList.remove("alarm", "locked", "recovering");
+      if(cursor) cursor.classList.remove("tick-blink");
+      countdownWrap.classList.remove("warning", "danger", "failure");
+      countdownLabel.textContent = "system countdown";
+
+      tokens = [];
+      buffer = "";
+      renderInput();
+      renderCountdown();
+
+      setTimeout(() => {
+        if(message.textContent === "SYSTEM RESET") clearMessage();
+      }, 1300);
+    }else{
+      message.textContent = "INCORRECT";
+      message.className = "message error";
+      tone(150, .15, .035);
+      triggerLockedAlarm("incorrect");
+
+      tokens = [];
+      buffer = "";
+      renderInput();
+
+      setTimeout(() => {
+        if(message.textContent === "INCORRECT") clearMessage();
+      }, 1000);
+    }
+  }
+
+  function pulseCursor(){
+    if(interactionBlocked() || !cursor) return;
+
+    cursor.classList.remove("tick-blink");
+
+    setTimeout(() => {
+      if(!interactionBlocked()) cursor.classList.add("tick-blink");
+    }, 500);
+  }
+
+  function tick(){
+    if(interactionBlocked()) return;
+    if(remaining <= 0) return;
+
+    remaining -= 1;
+    pulseCursor();
+
+    // LOST's warning sequence intensifies at the 1-minute mark.
+    // Use the supplied alarm clip for that critical final minute.
+    if(remaining <= CRITICAL_ALARM_SECONDS && remaining > 0){
+      startAlarmAudio();
+    }
+
+    if(remaining <= 240){
+      const cadence = remaining <= 10 ? 1 : 2;
+      if(remaining % cadence === 0 && lastWarningTone !== remaining){
+        lastWarningTone = remaining;
+        tone(790, .06, .024);
+      }
+    }
+
+    if(remaining === 0){
+      tone(95, .5, .05);
+      triggerLockedAlarm("zero");
+    }
+
+    renderCountdown();
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if(interactionBlocked()){
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+
+    if(isTerminalKey(e.key)){
+      playKeyPressSound();
+    }
+
+    if(/^[0-9]$/.test(e.key)){
+      e.preventDefault();
+      inputDigit(e.key);
+    }else if(e.key === " "){
+      e.preventDefault();
+      space();
+    }else if(e.key === "Backspace"){
+      e.preventDefault();
+      backspace();
+    }else if(e.key === "Enter"){
+      e.preventDefault();
+      execute();
+    }else if(e.key === "Escape"){
+      e.preventDefault();
+      clearInput();
+    }
+  });
+
+  document.querySelectorAll(".number-chip").forEach((btn) => {
+    btn.addEventListener("click", (event) => {
+      if(interactionBlocked()){
+        event.preventDefault();
+        return;
+      }
+      playKeyPressSound();
+      inputWholeNumber(btn.dataset.value);
+      terminal.focus();
+    });
+  });
+
+  terminal.addEventListener("pointerdown", (event) => {
+    if(interactionBlocked()){
+      event.preventDefault();
+      return;
+    }
+    ensureAudio();
+    terminal.focus();
+  });
+
+  ["click","dblclick","contextmenu","pointerup","mousedown","mouseup","touchstart","touchend","wheel"].forEach((type) => {
+    terminal.addEventListener(type, (event) => {
+      if(interactionBlocked()){
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    }, { capture: true, passive: false });
+  });
+
+  if(backgroundAudio){
+    backgroundAudio.loop = false;
+    backgroundAudio.volume = BACKGROUND_VOLUME;
+
+    backgroundAudio.addEventListener("ended", scheduleBackgroundReplay);
+
+    backgroundAudio.addEventListener("play", () => {
+      backgroundStarted = true;
+    });
+
+    backgroundAudio.addEventListener("pause", () => {
+      if(!backgroundAudio.ended){
+        backgroundStarted = false;
+      }
+    });
+
+    // Try audible autoplay immediately. If the browser blocks it,
+    // the first real user interaction retries playback.
+    startBackgroundAudio();
+
+    document.addEventListener("keydown", retryBackgroundAudioAfterGesture, {
+      capture:true
+    });
+
+    document.addEventListener("pointerdown", retryBackgroundAudioAfterGesture, {
+      capture:true
+    });
+
+    document.addEventListener("touchstart", retryBackgroundAudioAfterGesture, {
+      capture:true,
+      passive:true
+    });
+  }
+
+  if(monsterAudio){
+    monsterAudio.loop = false;
+    monsterAudio.volume = MONSTER_VOLUME;
+
+    // Prime on normal interaction so the delayed fifth-glyph cue can play
+    // even though it fires several seconds after the user's key/click action.
+    document.addEventListener("keydown", retryMonsterAudioAfterGesture, {
+      capture:true
+    });
+
+    document.addEventListener("pointerdown", retryMonsterAudioAfterGesture, {
+      capture:true
+    });
+
+    document.addEventListener("touchstart", retryMonsterAudioAfterGesture, {
+      capture:true,
+      passive:true
+    });
+  }
+
+  if(alarmAudio){
+    alarmAudio.loop = false;
+    alarmAudio.volume = ALARM_VOLUME;
+
+    alarmAudio.addEventListener("ended", () => {
+      if(!alarmAudioActive) return;
+
+      try{
+        alarmAudio.currentTime = 0;
+      }catch(_error){}
+
+      startAlarmAudio();
+    });
+
+    // Prime/retry audio on the first real user interaction so browsers that
+    // block unattended audio can still play the alarm later in the countdown.
+    document.addEventListener("keydown", retryAlarmAudioAfterGesture, {
+      capture:true
+    });
+
+    document.addEventListener("pointerdown", retryAlarmAudioAfterGesture, {
+      capture:true
+    });
+
+    document.addEventListener("touchstart", retryAlarmAudioAfterGesture, {
+      capture:true,
+      passive:true
+    });
+  }
+
+  renderInput();
+  initializeLiveCountdown();
+  scheduleNextVisualGlitch();
+  setInterval(tick, 1000);
+  terminal.focus();
+})();
+</script>
+</body>
+</html>

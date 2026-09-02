@@ -1,0 +1,20 @@
+# Third-party audio is not part of the repository's MIT-licensed source
+*.mp3
+*.wav
+*.ogg
+*.m4a
+
+# Local / deployment files
+*.bak
+*.log
+.env
+.env.*
+tmp/
+backups/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
